@@ -1,6 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <model package="commerce_wishlist" baseClass="comSimpleObject" platform="mysql" defaultEngine="MyISAM" version="1.1">
-    <!--<object class="WishlistOrderMessage" extends="comOrderMessage" />-->
-    <!--<object class="WishlistProduct" extends="comProduct" />-->
-    <!--<object class="WishlistShippingMethod" extends="comShippingMethod" />-->
+    <!-- Wishlist Lists. Lets users have multiple wishlists -->
+    <object class="WishlistList" table="commerce_wishlist_list" extends="xPDOSimpleObject">
+        <field key="properties" dbtype="text" phptype="array" null="true" />
+        <field key="user" dbtype="int" precision="10" phptype="int" null="true" default="0" />
+        <field key="name" dbtype="varchar" precision="190" phptype="string" null="false" default="" />
+        <field key="description" dbtype="text" phptype="string" null="true" default="" />
+        <field key="secret" dbtype="varchar" precision="190" phptype="string" null="false" default="" />
+        <field key="share" dbtype="tinyint" precision="1" phptype="boolean" null="false" default="0" />
+        <field key="removed" dbtype="tinyint" precision="1" phptype="boolean" null="false" default="0" />
+
+        <aggregate alias="User" class="modUser" local="user" foreign="id" cardinality="one" owner="foreign" />
+    </object>
+
+    <!-- A wishlist item, referring back to WishlistList and comProduct -->
+    <object class="WishlistItem" table="commerce_wishlist_item" extends="xPDOSimpleObject">
+        <field key="properties" dbtype="text" phptype="array" null="true" />
+        <field key="list" dbtype="int" precision="10" phptype="int" null="true" default="0" />
+        <field key="product" dbtype="int" precision="10" phptype="int" null="true" default="0" />
+        <field key="date" formatter="datetime" dbtype="int" precision="20" phptype="int" null="false" default="0" />
+        <field key="removed" dbtype="tinyint" precision="1" phptype="boolean" null="false" default="0" />
+
+        <aggregate alias="List" class="WishlistList" local="list" foreign="id" cardinality="one" owner="foreign" />
+        <aggregate alias="Product" class="comProduct" local="product" foreign="id" cardinality="one" owner="foreign" />
+    </object>
 </model>
