@@ -81,6 +81,9 @@ EOD;
 
 $generator->parseSchema($sources['schema'] . 'commerce_wishlist.mysql.schema.xml', $sources['model']);
 
+$modx->addPackage('commerce_wishlist', $sources['model']);
+$manager->createObjectContainer('WishlistList');
+$manager->createObjectContainer('WishlistItem');
 
 $mtime= microtime();
 $mtime= explode(" ", $mtime);
