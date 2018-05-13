@@ -8,6 +8,7 @@
         <field key="description" dbtype="text" phptype="string" null="true" default="" />
         <field key="secret" dbtype="varchar" precision="190" phptype="string" null="false" default="" />
         <field key="share" dbtype="tinyint" precision="1" phptype="boolean" null="false" default="0" />
+        <field key="pos" dbtype="int" precision="10" phptype="int" null="true" default="0" />
         <field key="removed" dbtype="tinyint" precision="1" phptype="boolean" null="false" default="0" />
 
         <aggregate alias="User" class="modUser" local="user" foreign="id" cardinality="one" owner="foreign" />
@@ -18,6 +19,8 @@
         <field key="properties" dbtype="text" phptype="array" null="true" />
         <field key="list" dbtype="int" precision="10" phptype="int" null="true" default="0" />
         <field key="product" dbtype="int" precision="10" phptype="int" null="true" default="0" />
+        <field key="target" dbtype="int" precision="10" phptype="int" null="true" default="0" />
+        <field key="note" dbtype="text" phptype="string" null="true" default="" />
         <field key="date" formatter="datetime" dbtype="int" precision="20" phptype="int" null="false" default="0" />
         <field key="pos" dbtype="int" precision="10" phptype="int" null="true" default="0" />
         <field key="removed" dbtype="tinyint" precision="1" phptype="boolean" null="false" default="0" />

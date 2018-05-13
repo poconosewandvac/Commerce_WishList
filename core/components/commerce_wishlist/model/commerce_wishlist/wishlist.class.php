@@ -63,7 +63,36 @@ class Wishlist {
             //$this->modx->regClientCSS($this->config['cssUrl'] . 'wishlist.css');
         }
         if ($js) {
-            //$this->modx->regClientScript($this->config['jsUrl'] . 'wishlist.js');
+            $this->modx->regClientScript($this->config['jsUrl'] . 'vue.js');
         }
+    }
+
+    /**
+     * Add list from submission
+     *
+     * @param array $values
+     * @return void
+     */
+    public function addList($values) {
+        
+    }
+
+    /**
+     * Add item from submission
+     *
+     * @param array $values
+     * @return void
+     */
+    public function addItem($values) {
+        
+    }
+
+    /** 
+     * Get all user lists
+     * 
+     * @return string
+     */
+    public function getLists() {
+
     }
 }
