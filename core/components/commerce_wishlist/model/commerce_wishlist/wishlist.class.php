@@ -82,6 +82,7 @@ class Wishlist {
      */
     public function addList($values) {
         $values['secret'] = $this->generateSecret();
+        $values['user'] = $this->getUser();
 
         $query = $this->modx->newObject("WishlistList");
         $query->fromArray($values);
@@ -144,6 +145,51 @@ class Wishlist {
         ]);
 
         return $default ? $default->get('id') : false;
+    }
+
+    /**
+     * Fetches the name of the list
+     *
+     * @param string list
+     * @param bool secret use secret
+     * @return list object
+     */
+    public function getList($list, $secret = false) {
+        $query = $this->modx->newQuery("WishlistList");
+        
+        if ($secret) {
+            $query->where([
+                'secret' => $list
+            ]);
+        } else {
+            $query->where([
+                'id' => $list
+            ]);
+        }
+
+        return $this->modx->getObject('WishlistList', $query);
+    }
+
+    /** 
+     * Checks if user can access the list.
+     * 
+     * @param string list
+     * @param bool secret use secret
+     * @return bool
+     */
+    public function hasPermission($list, $secret = false) {
+        $check = $this->getList($list, $secret);
+
+        // If list doesn't exist
+        if (!$check) {
+            return false;
+        }
+
+        if (((int)$check->get('user') === $this->user) || (int)$check->get('share') === 1) {
+            return true;
+        }
+
+        return false;
     }
 
     /** 

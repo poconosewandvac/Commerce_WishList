@@ -9,9 +9,10 @@ $tplWrapper = $modx->getOption("tplWrapper", $scriptProperties, "WishlistWrap");
 $addListTpl = $modx->getOption("addListTpl", $scriptProperties, "WishlistAddList");
 $listTpl = $modx->getOption("listTpl", $scriptProperties, "WishlistList");
 $itemTpl = $modx->getOption("itemTpl", $scriptProperties, "WishlistItem");
-
+$values = $modx->getOption("values", $scriptProperties, $_REQUEST["values"]);
 $registerCss = (bool)$modx->getOption("registerCss", $scriptProperties, true);
 $registerJs = (bool)$modx->getOption("registerJs", $scriptProperties, true);
+$placeholders = [];
 
 // Check if user is logged in
 $user = $modx->user->get('id');
@@ -32,12 +33,16 @@ if (isset($_REQUEST["add"]) && isset($_REQUEST["type"]) && is_array($values) && 
             $wishlist->addItem($values);
             break;
     }
+} else if (isset($_REQUEST["add"])) {
+    $addList = $modx->getChunk($addListTpl);
 }
 
 // Guest viewing of wish list
-if (isset($_REQUEST["secret"])) {
+$hasPermission = $wishlist->hasPermission($_REQUEST["secret"], true);
+if (isset($_REQUEST["secret"]) && $hasPermission) {
     $getItems = $wishlist->getFormattedItems($_REQUEST["secret"], true);
-} else if ($user) {
+    $getList = $wishlist->getList($_REQUEST["secret"], true);
+} else if ($hasPermission) {
     $getItems = $wishlist->getFormattedItems($wishlist->getDefaultList());
 } else {
     $modx->sendUnauthorizedPage();
@@ -56,5 +61,6 @@ foreach ($getLists as $list) {
 return $modx->getChunk($tplWrapper, [
     'lists' => $lists,
     'listname' => 'Test',
-    'items' => $items
+    'items' => $items,
+    'addlist' => $addList
 ]);
