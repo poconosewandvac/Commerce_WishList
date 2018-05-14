@@ -82,7 +82,7 @@ class Wishlist {
      */
     public function addList($values) {
         $values['secret'] = $this->generateSecret();
-        
+
         $query = $this->modx->newObject("WishlistList");
         $query->fromArray($values);
         $query->save();
@@ -115,10 +115,10 @@ class Wishlist {
     /** 
      * Get all user lists
      * 
-     * @param array Override what lists it is looking for
+     * @param array $where Override what lists it is looking for
      * @return collection
      */
-    public function getLists($where = false) {
+    public function getLists($where = null) {
         $query = $this->modx->newQuery("WishlistList");
 
         if ($where) {
@@ -130,6 +130,77 @@ class Wishlist {
         }
         
         return $this->modx->getCollection('WishlistList', $query);
+    }
+
+    /** 
+     * Get the default user list (based on pos)
+     * 
+     * @return list id
+     */
+    public function getDefaultList() {
+        $default = $this->modx->getObject("WishlistList", [
+            'user' => $this->getUser(),
+            'pos' => 0
+        ]);
+
+        return $default ? $default->get('id') : false;
+    }
+
+    /** 
+     * Get all user lists
+     * 
+     * @param string $join Package to join on.
+     * @param array $where Override what lists it is looking for
+     * @return collection
+     */
+    public function getFormattedItems($list, $secret = false, $where = null, $join = 'comProduct') {
+        $query = $this->modx->newQuery("WishlistItem");
+        $query->select($this->modx->getSelectColumns('WishlistItem', 'WishlistItem'));
+
+        switch ($join) {
+            case "comProduct":
+                $query->select($this->modx->getSelectColumns('comProduct', 'comProduct'));
+                $query->innerJoin('comProduct', 'comProduct', ["WishlistItem.product = comProduct.id"]);
+
+                break;
+
+            case "modResource":
+                $query->select($this->modx->getSelectColumns('modResource', 'modResource'));
+                $query->innerJoin('modResource', 'modResource', ["WishlistItem.target = modResource.id"]);
+
+                break;
+        }
+
+        if ($where) {
+            $query->fromArray($where);
+        } else if ($secret) {
+            $query->select('WishlistList.secret');
+            $query->innerJoin('WishlistList', 'WishlistList', ["WishlistItem.list = WishlistList.id"]);
+            $query->where([
+                'WishlistList.secret' => $list
+            ]);
+        } else {
+            $query->where([
+                'WishlistItem.list' => $list
+            ]);
+        }
+        
+        return $this->modx->getCollection('WishlistItem', $query);
+    }
+
+    /**
+     * Gets all items in a list
+     * 
+     * @param int list secret
+     */
+    public function getItems($list) {
+        $query = $this->modx->newQuery("WishlistItem");
+        $query->where([
+            'list' => $list
+        ]);
+        $query->sortby('pos', 'ASC');
+        
+        return $this->modx->getCollection('WishlistItem', $query);
     }
 
     /**
