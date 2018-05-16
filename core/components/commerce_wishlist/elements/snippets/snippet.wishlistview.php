@@ -9,48 +9,54 @@ $tplWrapper = $modx->getOption("tplWrapper", $scriptProperties, "WishlistWrap");
 $addListTpl = $modx->getOption("addListTpl", $scriptProperties, "WishlistAddList");
 $listTpl = $modx->getOption("listTpl", $scriptProperties, "WishlistList");
 $emptyListTpl = $modx->getOption("emptyListTpl", $scriptProperties, "WishlistEmptyList");
+$noListTpl = $modx->getOption("noListTpl", $scriptProperties, "WishlistNoList");
 $itemTpl = $modx->getOption("itemTpl", $scriptProperties, "WishlistItem");
 $values = $modx->getOption("values", $scriptProperties, $_REQUEST["values"]);
 $registerCss = (bool)$modx->getOption("registerCss", $scriptProperties, true);
 $registerJs = (bool)$modx->getOption("registerJs", $scriptProperties, true);
 $placeholders = [];
 
-// Check if user is logged in
 $user = $modx->user->get('id');
+$resource = $modx->resource->get('id');
 
 // Load WishList class
 $wishlist = $modx->getService('wishlist','Wishlist', $modx->getOption('commerce_wishlist.core_path', null, $modx->getOption('core_path').'components/commerce_wishlist/').'model/commerce_wishlist/', [$scriptProperties,  'user' => $user]);
 if (!($wishlist instanceof Wishlist)) return '';
 
-// Tries getting the list the user has requested
-if (isset($_REQUEST["secret"])) {
-    $list = $wishlist->getList($_REQUEST["secret"], true);
-
-} else if ($user) {
-    $list = $wishlist->getList($wishlist->getDefaultList());
-}
-
-// Deny on unknown list
-if (!$list) {
-    $modx->sendUnauthorizedPage();
-}
-
-// Check if user has access to the requested list
-$hasReadPermission = $wishlist->hasReadPermission($list->get('id'));
-if (!$hasReadPermission) {
-    $modx->sendUnauthorizedPage();
-}
-
+// Handle adding
 if (isset($_REQUEST["add"]) && isset($_REQUEST["type"]) && is_array($values) && $user) {
     switch ($_REQUEST["type"]) {
         case "list":
             $wishlist->addList($values);
+            $modx->sendRedirect($modx->makeUrl($resource));
             break;
         
         case "item":
             $wishlist->addItem($values);
             break;
     }
+}
+
+// Tries getting the list the user has requested
+$defaultList = $wishlist->getDefaultList();
+if (isset($_REQUEST["secret"])) {
+    $list = $wishlist->getList($_REQUEST["secret"], true);
+
+} else if ($user) {
+    $list = $wishlist->getList($defaultList);
+}
+
+// Deny on unknown list
+if (!$list && !$user) {
+    $modx->sendUnauthorizedPage();
+} else if (!$defaultList) {
+    return $modx->getChunk($noListTpl, ['addListTpl' => $addListTpl]);
+}
+
+// Check if user has access to the requested list
+$hasReadPermission = $wishlist->hasReadPermission($list->get('id'));
+if (!$hasReadPermission) {
+    $modx->sendUnauthorizedPage();
 }
 
 // Fetch items in the list
