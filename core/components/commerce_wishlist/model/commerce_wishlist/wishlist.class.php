@@ -156,7 +156,7 @@ class Wishlist {
      */
     public function getList($list, $secret = false) {
         $query = $this->modx->newQuery("WishlistList");
-        
+
         if ($secret) {
             $query->where([
                 'secret' => $list

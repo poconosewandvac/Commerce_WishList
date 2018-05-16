@@ -23,6 +23,23 @@ if (!($wishlist instanceof Wishlist)) return '';
 
 $wishlist->registerAssets($registerCss, $registerJs);
 
+// Tries getting the list the user has requested
+if (isset($_REQUEST["secret"])) {
+    $list = $wishlist->getList($_REQUEST["secret"], true);
+
+} else if ($user) {
+    $list = $wishlist->getList($wishlist->getDefaultList());
+}
+if (!$list) {
+    $modx->sendUnauthorizedPage();
+}
+
+// Check if user has access to the requested list
+$hasPermission = $wishlist->hasPermission($list->get('id'));
+if (!$hasPermission) {
+    $modx->sendUnauthorizedPage();
+}
+
 if (isset($_REQUEST["add"]) && isset($_REQUEST["type"]) && is_array($values) && $user) {
     switch ($_REQUEST["type"]) {
         case "list":
@@ -37,30 +54,28 @@ if (isset($_REQUEST["add"]) && isset($_REQUEST["type"]) && is_array($values) && 
     $addList = $modx->getChunk($addListTpl);
 }
 
-// Guest viewing of wish list
-$hasPermission = $wishlist->hasPermission($_REQUEST["secret"], true);
-if (isset($_REQUEST["secret"]) && $hasPermission) {
-    $getItems = $wishlist->getFormattedItems($_REQUEST["secret"], true);
-    $getList = $wishlist->getList($_REQUEST["secret"], true);
-} else if ($hasPermission) {
-    $getItems = $wishlist->getFormattedItems($wishlist->getDefaultList());
-} else {
-    $modx->sendUnauthorizedPage();
-}
-
-foreach ($getItems as $item) {
-    $items .= $modx->getChunk($itemTpl, $item->toArray());
+// Fetch items in the list
+$getItems = $wishlist->getFormattedItems($list->get('id'));
+foreach ($getItems as $i) {
+    $items .= $modx->getChunk($itemTpl, $i->toArray());
 }
 
 // Fetch all available lists
 $getLists = $wishlist->getLists();
-foreach ($getLists as $list) {
-    $lists .= $modx->getChunk($listTpl, $list->toArray());
+foreach ($getLists as $l) {
+    $lists .= $modx->getChunk($listTpl, $l->toArray());
 }
 
-return $modx->getChunk($tplWrapper, [
+// Make list details available in the wrapper
+$listArr = $list->toArray();
+foreach($listArr as $key => $val) {
+    $listArr['list'.$key] = $val;
+    unset($listArr[$key]);
+}
+$placeholders = array_merge($placeholders, $listArr);
+
+return $modx->getChunk($tplWrapper, array_merge([
     'lists' => $lists,
-    'listname' => 'Test',
     'items' => $items,
     'addlist' => $addList
-]);
+], $placeholders));
