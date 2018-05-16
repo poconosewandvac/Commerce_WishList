@@ -171,13 +171,29 @@ class Wishlist {
     }
 
     /** 
-     * Checks if user can access the list.
+     * "Removes" a list (just sets "removed" column to 1) 
+     * 
+     * @param string list
+     * @param bool secret use secret
+     * @return void
+     */
+    public function deleteList($list, $secret = false) {
+        $query = $this->getList($list, $secret);
+
+        if ($query) {
+            $query->set('removed', 0);
+            $query->save();
+        }
+    }
+
+    /** 
+     * Checks if user can read the list.
      * 
      * @param string list
      * @param bool secret use secret
      * @return bool
      */
-    public function hasPermission($list, $secret = false) {
+    public function hasReadPermission($list, $secret = false) {
         $check = $this->getList($list, $secret);
 
         // If list doesn't exist
@@ -235,9 +251,24 @@ class Wishlist {
     }
 
     /**
+     * Gets a single item by id
+     * 
+     * @param int item id
+     */
+    public function getItem($item) {
+        $query = $this->modx->newQuery("WishlistItem");
+        $query->where([
+            'id' => $item
+        ]);
+        
+        return $this->modx->getObject('WishlistItem', $query);
+    }
+
+    /**
      * Gets all items in a list
      * 
-     * @param int list secret
+     * @param int list id
+     * @return items
      */
     public function getItems($list) {
         $query = $this->modx->newQuery("WishlistItem");
@@ -247,6 +278,21 @@ class Wishlist {
         $query->sortby('pos', 'ASC');
         
         return $this->modx->getCollection('WishlistItem', $query);
+    }
+
+    /** 
+     * "Removes" an item (just sets "removed" column to 1) 
+     * 
+     * @param string item
+     * @return void
+     */
+    public function deleteItem($item) {
+        $query = $this->getItem($item);
+
+        if ($query) {
+            $query->set('removed', 0);
+            $query->save();
+        }
     }
 
     /**
