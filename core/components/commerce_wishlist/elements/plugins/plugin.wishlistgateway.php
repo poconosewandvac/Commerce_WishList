@@ -20,11 +20,18 @@ if (substr($requestURI, 0, strlen($requestURI)) === $requestURI) {
     
     // Handle adding requests
     if ($requestParts[$l - 1] === "add") {
+        $_REQUEST["add"] = 1;
         $modx->sendForward($resourceId);
     }
     
     // Handle delete requests
     if ($requestParts[$l - 2] === "delete") {
+        $_REQUEST["delete"] = (int) $requestParts[$l - 1];
+        $modx->sendForward($resourceId);   
+    }
+    
+    if ($requestParts[$l - 2] === "edit") {
+        $_REQUEST["edit"] = (int) $requestParts[$l - 1];
         $modx->sendForward($resourceId);   
     }
     

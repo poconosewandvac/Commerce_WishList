@@ -208,6 +208,31 @@ class Wishlist {
         return false;
     }
 
+    /**
+     * If user has permission to edit list
+     *
+     * @param [type] $list
+     * @param boolean $secret
+     * @return boolean
+     */
+    public function hasEditPermission($list, $secret = false) {
+        $query = $this->modx->newQuery("WishlistList");
+
+        if ($secret) {
+            $query->where([
+                'secret' => $list,
+                'user' => $this->getUser()
+            ]);
+        } else {
+            $query->where([
+                'id' => $list,
+                'user' => $this->getUser()
+            ]);
+        }
+
+        return $this->modx->getObject("WishlistList", $query) ? true : false;
+    }
+
     /** 
      * Get all user lists
      * 
