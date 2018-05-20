@@ -67,7 +67,7 @@ class Wishlist {
      */
     public function registerAssets($css, $js) {
         if ($css) {
-            //$this->modx->regClientCSS($this->config['cssUrl'] . 'wishlist.css');
+            $this->modx->regClientCSS($this->config['cssUrl'] . 'wishlist.css');
         }
         if ($js) {
             $this->modx->regClientScript($this->config['jsUrl'] . 'wishlist.js');
@@ -93,6 +93,36 @@ class Wishlist {
         }
 
         return $query->get('id');
+    }
+
+    /** 
+     * Edits existing list
+     * 
+     * @param array values to edit
+     * @param list secret|id
+     * @param bool use secret
+     */
+    public function editList($values, $list, $secret = false) {
+        $c = $this->modx->newQuery("WishlistList");
+        $c->where([
+            'user' => $this->getUser()
+        ]);
+
+        if ($secret) {
+            $c->where([
+                'secret' => $list
+            ]);
+        } else {
+            $c->where([
+                'id' => $list
+            ]);
+        }
+
+        $editList = $this->modx->getObject("WishlistList", $c);
+        if ($editList) {
+            $editList->fromArray($values);
+            $editList->save();
+        }
     }
 
     /**

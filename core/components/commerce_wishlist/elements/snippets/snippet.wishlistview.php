@@ -25,7 +25,7 @@ $wishlist = $modx->getService('wishlist','Wishlist', $modx->getOption('commerce_
 if (!($wishlist instanceof Wishlist)) return '';
 
 // Handle adding
-if (isset($_REQUEST["type"]) && is_array($values) && $user) {
+if (isset($_REQUEST["type"]) && isset($_REQUEST["secret"]) && is_array($values) && $user) {
     switch ($_REQUEST["type"]) {
         case "add":
             $wishlist->addList($values);
@@ -33,7 +33,7 @@ if (isset($_REQUEST["type"]) && is_array($values) && $user) {
             break;
             
         case "edit":
-            $wishlist->editList($values);
+            $wishlist->editList($values, $_REQUEST["secret"], true);
             $modx->sendRedirect($modx->makeUrl($resource));
             break;
             
