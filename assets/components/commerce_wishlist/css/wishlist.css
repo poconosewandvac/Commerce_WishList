@@ -1,9 +1,11 @@
+/* Global */
 .wishlist-manager *, .wishlist-manager *:before, .wishlist-manager *:after {
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
 }
 
+/* Dialog modal styles */
 .wishlist-modal-open {
     color: #666666;
     font-size: 1rem;
@@ -73,6 +75,66 @@
     display: block;
 }
 
+/* Items styles */
+.wishlist-item-name small {
+    color: #666666;
+    font-size: 0.9rem;
+    display: block;
+    line-height: 1;
+}
+
+.wishlist-item-row-inner {
+    display: flex;
+    align-items: center;
+}
+
+.wishlist-item-image {
+    flex: 25% 0 0;
+    padding: 0.5rem;
+    align-self: flex-start;
+}
+
+.wishlist-item-desc {
+    flex: 75% 0 0;
+    padding: 0.5rem;
+}
+
+.wishlist-item-delete-wrap {
+    float: right;
+}
+
+.wishlist-item-remove {
+    padding: 0.5rem;
+    border: solid 1px #e4e4e4;
+}
+
+.wishlist-item-add-note {
+    background: #efefef;
+    padding: 0.5rem;
+    border-radius: 3px;
+}
+
+.wishlist-item-edit-wrap {
+    display: none;
+    animation: fadeIn 500ms;
+}
+
+.wishlist-item-edit-wrap.active {
+    display: block;
+}
+
+/* Media queries */
+@media screen and (max-width: 767px) {
+    .wishlist-item-row-inner {
+        flex-flow:wrap;
+    }
+
+    .wishlist-item-image, .wishlist-item-desc {
+        flex: 0 0 100%;
+    }
+}
+
+/* Animations */
 @keyframes dialogPush {
     from {
         margin-top: -400px;

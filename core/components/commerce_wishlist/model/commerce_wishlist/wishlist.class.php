@@ -133,6 +133,8 @@ class Wishlist {
      */
     public function addItem($values) {
         $query = $this->modx->newObject("WishlistItem");
+        $values['date'] = time();
+        
         $query->fromArray($values);
         $query->save();
 

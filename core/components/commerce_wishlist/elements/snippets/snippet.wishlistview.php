@@ -24,20 +24,20 @@ $resource = $modx->resource->get('id');
 $wishlist = $modx->getService('wishlist','Wishlist', $modx->getOption('commerce_wishlist.core_path', null, $modx->getOption('core_path').'components/commerce_wishlist/').'model/commerce_wishlist/', [$scriptProperties,  'user' => $user]);
 if (!($wishlist instanceof Wishlist)) return '';
 
-// Handle adding
+// Handle add/edit/delete
 if (isset($_REQUEST["type"]) && isset($_REQUEST["secret"]) && is_array($values) && $user) {
     switch ($_REQUEST["type"]) {
-        case "add":
+        case "add_list":
             $wishlist->addList($values);
             $modx->sendRedirect($modx->makeUrl($resource));
             break;
             
-        case "edit":
+        case "edit_list":
             $wishlist->editList($values, $_REQUEST["secret"], true);
             $modx->sendRedirect($modx->makeUrl($resource));
             break;
             
-        case "delete":
+        case "delete_list":
             $wishlist->deleteList($values);
             $modx->sendRedirect($modx->makeUrl($resource));
             break;
@@ -56,7 +56,7 @@ if (isset($_REQUEST["secret"])) {
 // Deny on unknown list
 if (!$list && !$user) {
     $modx->sendUnauthorizedPage();
-} else if (!$defaultList) {
+} else if (!$defaultList && $user) {
     return $modx->getChunk($noListTpl, ['addListTpl' => $addListTpl]);
 } else if (!$list) {
     $modx->sendRedirect($modx->makeUrl($resource));

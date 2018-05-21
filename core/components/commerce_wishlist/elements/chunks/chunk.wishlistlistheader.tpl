@@ -1,7 +1,7 @@
 <h4 class="wishlist-list-title">[[+listname:htmlent]] <small><button id="wishlist-modal-open" class="wishlist-modal-open">(Edit)</button></small></h4>
 <p id="wishlist-list-desc" class="wishlist-list-desc">[[+listdescription:htmlent]]</p>
 
-<div id="wishlist-list-edit-dialog" class="wishlist-list-edit-dialog reverse">
+<div id="wishlist-list-edit-dialog" class="wishlist-list-edit-dialog">
     <div>
         <header>
             <h4>Edit List <span id="wishlist-list-dialog-edit-close" class="wishlist-list-dialog-edit-close">&times;</span></h4>
@@ -20,11 +20,11 @@
                 </label>
                     
                 <input type="hidden" name="secret" value="[[+listsecret]]">
-                <input type="hidden" name="type" value="edit">
+                <input type="hidden" name="type" value="edit_list">
             </form>
             
             <form id="wishlist-list-delete-form" class="wishlist-list-delete-form" action="[[~[[*id]]]]/delete/list" method="POST">
-                <input type="hidden" name="type" value="delete">
+                <input type="hidden" name="type" value="delete_list">
                 <input type="hidden" name="secret" value="[[+listsecret]]">
             </form>
         </section>
