@@ -23,7 +23,7 @@
                 <input type="hidden" name="type" value="edit_list">
             </form>
             
-            <form id="wishlist-list-delete-form" class="wishlist-list-delete-form" action="[[~[[*id]]]]/delete/list" method="POST">
+            <form id="wishlist-list-delete-form" class="wishlist-list-delete-form" action="[[~[[*id]]]]/[[++commerce_wishlist.delete_uri]]" method="POST">
                 <input type="hidden" name="type" value="delete_list">
                 <input type="hidden" name="secret" value="[[+listsecret]]">
             </form>

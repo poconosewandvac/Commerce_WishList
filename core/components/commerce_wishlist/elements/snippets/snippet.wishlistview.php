@@ -5,6 +5,7 @@
  * Made by Tony Klapatch <tony@klapatch.net>
  */
 
+// Template options
 $tplWrapper = $modx->getOption("tplWrapper", $scriptProperties, "WishlistWrap");
 $addListTpl = $modx->getOption("addListTpl", $scriptProperties, "WishlistAddList");
 $listTpl = $modx->getOption("listTpl", $scriptProperties, "WishlistList");
@@ -12,9 +13,23 @@ $listHeaderTpl = $modx->getOption("listHeaderTpl", $scriptProperties, "WishlistL
 $emptyListTpl = $modx->getOption("emptyListTpl", $scriptProperties, "WishlistEmptyList");
 $noListTpl = $modx->getOption("noListTpl", $scriptProperties, "WishlistNoList");
 $itemTpl = $modx->getOption("itemTpl", $scriptProperties, "WishlistItem");
-$values = $modx->getOption("values", $scriptProperties, $_REQUEST["values"]);
+
+// URI paths
+$viewPath = $modx->getOption("commerce_wishlist.view_uri", null, "view");
+$editPath = $modx->getOption("commerce_wishlist.edit_uri", null, "edit");
+$deletePath = $modx->getOption("commerce_wishlist.delete_uri", null, "delete");
+$addPath = $modx->getOption("commerce_wishlist.add_uri", null, "add");
+
+// Passed values from web
+$values = $modx->getOption("values", $_REQUEST, null);
+$type = $modx->getOption("type", $_REQUEST, null);
+$secret = $modx->getOption("secret", $_REQUEST, null);
+
+// Registration of default CSS/JS on web
 $registerCss = (bool)$modx->getOption("registerCss", $scriptProperties, true);
 $registerJs = (bool)$modx->getOption("registerJs", $scriptProperties, true);
+
+// Output placeholders
 $placeholders = [];
 
 $user = $modx->user->get('id');
@@ -24,17 +39,22 @@ $resource = $modx->resource->get('id');
 $wishlist = $modx->getService('wishlist','Wishlist', $modx->getOption('commerce_wishlist.core_path', null, $modx->getOption('core_path').'components/commerce_wishlist/').'model/commerce_wishlist/', [$scriptProperties,  'user' => $user]);
 if (!($wishlist instanceof Wishlist)) return '';
 
+$wishlist->registerAssets($registerCss, $registerJs);
+
 // Handle add/edit/delete
-if (isset($_REQUEST["type"]) && isset($_REQUEST["secret"]) && is_array($values) && $user) {
-    switch ($_REQUEST["type"]) {
+if ($type && $secret && is_array($values) && $user) {
+    echo "TEST";
+    switch ($type) {
         case "add_list":
+            echo $type;
+
             $wishlist->addList($values);
             $modx->sendRedirect($modx->makeUrl($resource));
             break;
             
         case "edit_list":
-            $wishlist->editList($values, $_REQUEST["secret"], true);
-            $modx->sendRedirect($modx->makeUrl($resource));
+            $wishlist->editList($values, $secret, true);
+            $modx->sendRedirect($modx->makeUrl($resource) . '/' . $viewPath . '/' . $secret);
             break;
             
         case "delete_list":
@@ -45,21 +65,21 @@ if (isset($_REQUEST["type"]) && isset($_REQUEST["secret"]) && is_array($values) 
 }
 
 // Tries getting the list the user has requested
-$defaultList = $wishlist->getDefaultList();
-if (isset($_REQUEST["secret"])) {
-    $list = $wishlist->getList($_REQUEST["secret"], true);
-
-} else if ($user) {
-    $list = $wishlist->getList($defaultList);
+if ($secret) {
+    $list = $wishlist->getList($secret, true);
+    
+    if (!$list) {
+        $modx->sendForward($modx->getOption("error_page"));
+    }
+} else {
+    $list = $wishlist->getList($wishlist->getDefaultList());
 }
 
-// Deny on unknown list
-if (!$list && !$user) {
-    $modx->sendUnauthorizedPage();
-} else if (!$defaultList && $user) {
+// If no lists on profile, invalid list, and user is logged in, show the no lists tpl
+if (!$list && $user) {
     return $modx->getChunk($noListTpl, ['addListTpl' => $addListTpl]);
 } else if (!$list) {
-    $modx->sendRedirect($modx->makeUrl($resource));
+    $modx->sendForward($modx->getOption("error_page"));
 }
 
 // Check if user has access to the requested list
@@ -100,5 +120,4 @@ foreach ($getLists as $l) {
 }
 $placeholders['lists'] = $lists;
 
-$wishlist->registerAssets($registerCss, $registerJs);
 return $modx->getChunk($tplWrapper, $placeholders);

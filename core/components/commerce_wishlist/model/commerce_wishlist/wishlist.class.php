@@ -15,6 +15,9 @@ class Wishlist {
     public $commerce;
     public $config = [];
 
+    private $allowedListFields = [];
+    private $allowedItemFields = [];
+
     /**
      * Initialize modX, Commerce, and user
      *
@@ -134,7 +137,7 @@ class Wishlist {
     public function addItem($values) {
         $query = $this->modx->newObject("WishlistItem");
         $values['date'] = time();
-        
+
         $query->fromArray($values);
         $query->save();
 
@@ -233,7 +236,7 @@ class Wishlist {
             return false;
         }
 
-        if (((int)$check->get('user') === $this->user) || (int)$check->get('share') === 1) {
+        if (($check->get('user') == $this->user) || $check->get('share') == 1) {
             return true;
         }
 
@@ -338,7 +341,7 @@ class Wishlist {
     }
 
     /** 
-     * "Removes" an item (just sets "removed" column to 1) 
+     * "Removes" an item (soft delete, just sets "removed" column to 1) 
      * 
      * @param string item
      * @return void
