@@ -9,7 +9,7 @@
  * @package commerce_wishlist
  * @license See core/components/commerce_wishlist/docs/license.txt
  */
-class WishlistList extends xPDOSimpleObject
+class WishlistList extends comSimpleObject
 {
 
 }

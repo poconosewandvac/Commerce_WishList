@@ -14,28 +14,23 @@ $xpdo_meta_map['WishlistItem']= array (
   'package' => 'commerce_wishlist',
   'version' => '1.1',
   'table' => 'commerce_wishlist_item',
-  'extends' => 'xPDOSimpleObject',
+  'extends' => 'comSimpleObject',
   'tableMeta' => 
   array (
     'engine' => 'MyISAM',
   ),
   'fields' => 
   array (
-    'properties' => NULL,
     'list' => 0,
     'product' => 0,
+    'target' => 0,
+    'note' => '',
     'date' => 0,
     'pos' => 0,
     'removed' => 0,
   ),
   'fieldMeta' => 
   array (
-    'properties' => 
-    array (
-      'dbtype' => 'text',
-      'phptype' => 'array',
-      'null' => true,
-    ),
     'list' => 
     array (
       'dbtype' => 'int',
@@ -51,6 +46,21 @@ $xpdo_meta_map['WishlistItem']= array (
       'phptype' => 'int',
       'null' => true,
       'default' => 0,
+    ),
+    'target' => 
+    array (
+      'dbtype' => 'int',
+      'precision' => '10',
+      'phptype' => 'int',
+      'null' => true,
+      'default' => 0,
+    ),
+    'note' => 
+    array (
+      'dbtype' => 'text',
+      'phptype' => 'string',
+      'null' => true,
+      'default' => '',
     ),
     'date' => 
     array (

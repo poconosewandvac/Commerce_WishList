@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <model package="commerce_wishlist" baseClass="comSimpleObject" platform="mysql" defaultEngine="MyISAM" version="1.1">
-    <!-- Wishlist Lists. Lets users have multiple wishlists -->
-    <object class="WishlistList" table="commerce_wishlist_list" extends="xPDOSimpleObject">
-        <field key="properties" dbtype="text" phptype="array" null="true" />
+    <object class="WishlistList" table="commerce_wishlist_list" extends="comSimpleObject">
         <field key="user" dbtype="int" precision="10" phptype="int" null="true" default="0" />
         <field key="name" dbtype="varchar" precision="190" phptype="string" null="false" default="" />
         <field key="description" dbtype="text" phptype="string" null="true" default="" />
@@ -14,9 +12,7 @@
         <aggregate alias="User" class="modUser" local="user" foreign="id" cardinality="one" owner="foreign" />
     </object>
 
-    <!-- A wishlist item, referring back to WishlistList and comProduct -->
-    <object class="WishlistItem" table="commerce_wishlist_item" extends="xPDOSimpleObject">
-        <field key="properties" dbtype="text" phptype="array" null="true" />
+    <object class="WishlistItem" table="commerce_wishlist_item" extends="comSimpleObject">
         <field key="list" dbtype="int" precision="10" phptype="int" null="true" default="0" />
         <field key="product" dbtype="int" precision="10" phptype="int" null="true" default="0" />
         <field key="target" dbtype="int" precision="10" phptype="int" null="true" default="0" />

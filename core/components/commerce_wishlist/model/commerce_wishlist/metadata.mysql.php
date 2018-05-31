@@ -1,7 +1,7 @@
 <?php
 
 $xpdo_meta_map = array (
-  'xPDOSimpleObject' => 
+  'comSimpleObject' => 
   array (
     0 => 'WishlistList',
     1 => 'WishlistItem',

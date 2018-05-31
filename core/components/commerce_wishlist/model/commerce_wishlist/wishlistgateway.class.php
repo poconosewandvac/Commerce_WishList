@@ -9,7 +9,12 @@
  * @package commerce_wishlist
  * @license See core/components/commerce_wishlist/docs/license.txt
  */
-class WishlistItem extends comSimpleObject
-{
 
+class WishlistGateway {
+    private $modx;
+    private $scriptProperties;
+
+    public function __construct(modX &$modx) {
+        $this->modx =& $modx;
+    }
 }

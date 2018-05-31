@@ -25,6 +25,10 @@ $sources = array(
     'assets' => $root.'assets/components/commerce_wishlist/',
     'schema' => $root.'core/components/commerce_wishlist/model/schema/',
 );
+
+$modx->addPackage('commerce', MODX_CORE_PATH.'components/commerce/model/');
+$modx->addPackage('commerce_wishlist', $sources['model']);
+
 $manager= $modx->getManager();
 $generator= $manager->getGenerator();
 $generator->classTemplate= <<<EOD
@@ -81,7 +85,6 @@ EOD;
 
 $generator->parseSchema($sources['schema'] . 'commerce_wishlist.mysql.schema.xml', $sources['model']);
 
-$modx->addPackage('commerce_wishlist', $sources['model']);
 $manager->createObjectContainer('WishlistList');
 $manager->createObjectContainer('WishlistItem');
 

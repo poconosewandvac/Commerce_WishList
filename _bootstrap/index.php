@@ -107,6 +107,12 @@ $modulePath = $componentPath . '/core/components/commerce_wishlist/src/Modules/'
 // Instruct Commerce to load modules from our directory, providing the base namespace and module path twice
 $commerce->loadModulesFromDirectory($modulePath, 'PoconoSewVac\\Wishlist\\Modules\\', $modulePath);
 
+$manager= $modx->getManager();
+$modx->addPackage('commerce_wishlist', $componentPath . '/core/components/commerce_wishlist/model/');
+$manager->createObjectContainer('WishlistList');
+$manager->createObjectContainer('WishlistItem');
+
+
 // Clear the cache
 $modx->cacheManager->refresh();
 
