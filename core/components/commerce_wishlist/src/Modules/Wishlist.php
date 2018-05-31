@@ -2,6 +2,8 @@
 namespace PoconoSewVac\Wishlist\Modules;
 use modmore\Commerce\Modules\BaseModule;
 use Symfony\Component\EventDispatcher\EventDispatcher;
+use Twig\Loader\ChainLoader;
+use Twig\Loader\FilesystemLoader;
 
 require_once dirname(dirname(__DIR__)) . '/vendor/autoload.php';
 
@@ -34,10 +36,10 @@ class Wishlist extends BaseModule {
 //        $this->adapter->loadPackage('commerce_wishlist', $path);
 
         // Add template path to twig
-//        /** @var ChainLoader $loader */
-//        $root = dirname(dirname(__DIR__));
-//        $loader = $this->commerce->twig->getLoader();
-//        $loader->addLoader(new FilesystemLoader($root . '/templates/'));
+        /** @var ChainLoader $loader */
+        $root = dirname(dirname(__DIR__));
+        $loader = $this->commerce->twig->getLoader();
+        $loader->addLoader(new FilesystemLoader($root . '/templates/'));
     }
 
     public function getModuleConfiguration(\comModule $module)
