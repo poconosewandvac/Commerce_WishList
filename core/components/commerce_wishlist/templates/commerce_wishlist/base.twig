@@ -1,17 +1,80 @@
 <div class="wishlist-manager">
     {% block sidebar %}
 		<div class="wishlist-sidebar">
+            {% block lists %}
+                {% if lists is empty %}
+                    <p>No lists on your account yet, add a new list!</p>
+                {% endif %}
 
+                <ul>
+                    {% for list in lists %}
+                        {# 
+                            All WishlistList fields are available here.                            
+                        #}
+                        <li><a href="view/{{ list.secret }}">{{ list.name|e }}
+                    {% endfor %}
+                </ul>
+            {% endblock %}
 		</div>
     {% endblock %}
 
     {% block content %}
-		{% block title %}
-		    <h4 class="wishlist-title">{{ title }}</h4>
-		{% endblock %}
+        <div class="wishlist-content">
+            {% block title %}
+                <h4 class="wishlist-title">{{ title }}</h4>
+            {% endblock %}
 
-		{% block items %}
+            {% block items %}
+                {% if items is empty %}
+                    <p>No products are currently in this list.</p>
+                {% endif %}
 
-		{% endblock %}
+                {% for item in items %}
+                    {# 
+                        All comProduct fields are available here. 
+                    #}
+                    <div class="wishlist-item-row">
+                        <div class="wishlist-item-row-inner">
+                            <div class="wishlist-item-image">
+                                <img src="{{ item.image|e|default('https://via.placeholder.com/300x300?text=No%20image') }}" alt="{{ item.name|e }}">
+                            </div>
+                            <div class="wishlist-item-desc">
+                                <h4 class="wishlist-item-name">
+                                    <a href="{{ item.target }}">{{ item.name|e }}</a>
+
+                                    {# 
+                                        Date format for Month DD, YYYY 
+                                    #}
+                                    <small>Added on {{ item.date|date("F j, Y") }}</small>
+                                </h4>
+                                <p>{{ item.description|e }}</p>
+                                <p><strong>Price:</strong> {{ item.price_formatted }}</p>
+                                <p><strong>Note:</strong> {{ item.note|e }}</p>
+
+                                <div class="wishlist-item-delete-wrap">
+                                    <form id="wishlist-item-delete-form" class="wishlist-item-delete-form" action="{{ item.target }}/delete/item">
+                                        <input type="hidden" name="type" value="delete_item">
+                                        <input type="hidden" name="secret" value="{{ item.id }}">
+                                        <button type="submit" id="wishlist-item-remove" class="wishlist-item-remove">Remove</button>
+                                    </form>
+                                </div>
+
+                                <button id="wishlist-item-edit" class="wishlist-item-add-note">Edit this item</button>
+                                <div id="wishlist-item-edit-wrap" class="wishlist-item-edit-wrap">
+                                    <form id="wishlist-item-edit-form" class="wishlist-item-edit-form" action="[[~[[*id]]]]/edit/item" method="POST">
+                                        <label for="wishlist-item-note">Item Note</label>
+                                        <textarea class="wishlist-item-note" id="wishlist-item-note" name="values[note]" placeholder="Notes on this item">{{ item.note }}</textarea>
+
+                                        <input type="hidden" name="type" value="edit_item">
+                                        <input type="hidden" name="secret" value="{{ item.id }}">
+                                        <button type="submit" class="wishlist-item-save">Save</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endblock %}
+        </div>
     {% endblock %}
 </div>

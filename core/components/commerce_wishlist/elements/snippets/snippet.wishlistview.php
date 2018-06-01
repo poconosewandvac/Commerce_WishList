@@ -43,11 +43,8 @@ $wishlist->registerAssets($registerCss, $registerJs);
 
 // Handle add/edit/delete
 if ($type && $secret && is_array($values) && $user) {
-    echo "TEST";
     switch ($type) {
         case "add_list":
-            echo $type;
-
             $wishlist->addList($values);
             $modx->sendRedirect($modx->makeUrl($resource));
             break;
@@ -102,22 +99,18 @@ if (isset($_REQUEST["add"])) {
 } else {
     $getItems = $wishlist->getFormattedItems($list->get('id'));
     foreach ($getItems as $i) {
-        $items .= $modx->getChunk($itemTpl, $i->toArray());
+        $items[] = $i->toArray();
     }
-    
-    $placeholders['items'] = $modx->getChunk($listHeaderTpl, $listArr);
-    if ($items) {
-        $placeholders['items'] .= $items;
-    } else {
-        $placeholders['items'] .= $modx->getChunk($emptyListTpl);
-    }
+    $placeholders['items'] = $items;
 }
 
 // Fetch all available lists
 $getLists = $wishlist->getLists();
 foreach ($getLists as $l) {
-    $lists .= $modx->getChunk($listTpl, $l->toArray());
+    $lists[] = $l->toArray();
 }
 $placeholders['lists'] = $lists;
 
-return $modx->getChunk($tplWrapper, $placeholders);
+// Render the twig file, then render MODX tags
+$output = $wishlist->commerce->twig->render('commerce_wishlist/base.twig', $placeholders);
+return $wishlist->commerce->adapter->parseMODXTags($output);
