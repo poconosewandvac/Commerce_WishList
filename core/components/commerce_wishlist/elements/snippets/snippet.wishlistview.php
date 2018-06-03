@@ -5,15 +5,6 @@
  * Made by Tony Klapatch <tony@klapatch.net>
  */
 
-// Template options
-$tplWrapper = $modx->getOption("tplWrapper", $scriptProperties, "WishlistWrap");
-$addListTpl = $modx->getOption("addListTpl", $scriptProperties, "WishlistAddList");
-$listTpl = $modx->getOption("listTpl", $scriptProperties, "WishlistList");
-$listHeaderTpl = $modx->getOption("listHeaderTpl", $scriptProperties, "WishlistListHeader");
-$emptyListTpl = $modx->getOption("emptyListTpl", $scriptProperties, "WishlistEmptyList");
-$noListTpl = $modx->getOption("noListTpl", $scriptProperties, "WishlistNoList");
-$itemTpl = $modx->getOption("itemTpl", $scriptProperties, "WishlistItem");
-
 // URI paths
 $viewPath = $modx->getOption("commerce_wishlist.view_uri", null, "view");
 $editPath = $modx->getOption("commerce_wishlist.edit_uri", null, "edit");
@@ -29,11 +20,22 @@ $secret = $modx->getOption("secret", $_REQUEST, null);
 $registerCss = (bool)$modx->getOption("registerCss", $scriptProperties, true);
 $registerJs = (bool)$modx->getOption("registerJs", $scriptProperties, true);
 
+$user = $modx->user->get('id');
+$resource =& $modx->resource;
+
 // Output placeholders
 $placeholders = [];
 
-$user = $modx->user->get('id');
-$resource = $modx->resource->get('id');
+// Various useful properties array for easy access in twig
+$placeholders['properties'] = [
+    'resource' => $resource,
+    'resource_id' => $resource->get('id'),
+    'resource_url' => $modx->makeUrl($resource->get('id')),
+    'view_path' => $viewPath,
+    'edit_path' => $editPath,
+    'delete_path' => $deletePath,
+    'add_path' => $addPath,
+];
 
 // Load WishList class
 $wishlist = $modx->getService('wishlist','Wishlist', $modx->getOption('commerce_wishlist.core_path', null, $modx->getOption('core_path').'components/commerce_wishlist/').'model/commerce_wishlist/', [$scriptProperties,  'user' => $user]);
@@ -74,7 +76,8 @@ if ($secret) {
 
 // If no lists on profile, invalid list, and user is logged in, show the no lists tpl
 if (!$list && $user) {
-    return $modx->getChunk($noListTpl, ['addListTpl' => $addListTpl]);
+    $output = $wishlist->commerce->twig->render('commerce_wishlist/no-lists.html.twig', $placeholders);
+    return $wishlist->commerce->adapter->parseMODXTags($output);
 } else if (!$list) {
     $modx->sendForward($modx->getOption("error_page"));
 }
@@ -86,16 +89,11 @@ if (!$hasReadPermission) {
 }
 
 // Make list details available in the wrapper
-$listArr = $list->toArray();
-foreach($listArr as $key => $val) {
-    $listArr['list'.$key] = $val;
-    unset($listArr[$key]);
-}
-$placeholders = array_merge($placeholders, $listArr);
+$placeholders['list'] = $list->toArray();
 
 // Fetch items in the list
 if (isset($_REQUEST["add"])) {
-    $placeholders['addlist'] = $modx->getChunk($addListTpl);
+    $placeholders['addlist'] = true;
 } else {
     $getItems = $wishlist->getFormattedItems($list->get('id'));
     foreach ($getItems as $i) {
@@ -112,5 +110,5 @@ foreach ($getLists as $l) {
 $placeholders['lists'] = $lists;
 
 // Render the twig file, then render MODX tags
-$output = $wishlist->commerce->twig->render('commerce_wishlist/base.twig', $placeholders);
+$output = $wishlist->commerce->twig->render('commerce_wishlist/list-view.html.twig', $placeholders);
 return $wishlist->commerce->adapter->parseMODXTags($output);
