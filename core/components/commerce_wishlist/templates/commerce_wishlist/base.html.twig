@@ -1,8 +1,10 @@
 <div class="wishlist-manager">
     <div class="wishlist-sidebar">
-        {% block sidebar %}{% endblock %}
+        {% block sidebar %}
+            {% include 'commerce_wishlist/partial/sidebar.html.twig' %}
+        {% endblock %}
     </div>
-    
+
     <div class="wishlist-content">
         {% block content %}{% endblock %}
     </div>

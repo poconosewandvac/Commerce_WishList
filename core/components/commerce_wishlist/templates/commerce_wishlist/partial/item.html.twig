@@ -1,0 +1,47 @@
+{# 
+    All comProduct fields are available here, inside "item.product". WishlistItem fields are directly under "item" (except product, since that is within item.product anyways).
+#}
+<div class="wishlist-item-row">
+    <div class="wishlist-item-row-inner">
+        <div class="wishlist-item-image">
+            <img src="{{ item.product.image|e|default('https://via.placeholder.com/300x300?text=No%20image') }}" alt="{{ item.product.name|e }}">
+        </div>
+        <div class="wishlist-item-desc">
+            <h4 class="wishlist-item-name">
+                {# 
+                    By default this assumes the target is a resource ID, this might differ depending on how you use the target field 
+                #}
+                {% if item.product.target %}
+                    <a href="[[~{{ item.product.target }}]]">{{ item.product.name|e }}</a>
+                {% else %}
+                    {{ item.product_name|e }}
+                {% endif %}
+
+                {# 
+                    Date format for Month DD, YYYY 
+                #}
+                <small>{{ lex('commerce_wishlist.frontend.added_on') }} {{ item.date|date("F j, Y") }}</small>
+            </h4>
+
+            <p>{{ item.product.description|e }}</p>
+
+            {% if item.product.price %}
+                <p><strong>{{ lex('commerce.price') }}:</strong> {{ item.product.price_formatted }}</p>
+            {% endif %}
+
+            {% if item.note %}
+                <p><strong>{{ lex('commerce_wishlist.frontend.note') }}:</strong> {{ item.note|e }}</p>
+            {% endif %}
+
+            {# 
+                Deletion button form.
+            #}
+            {% include 'commerce_wishlist/partial/delete-item.html.twig' %}
+
+            {#
+                This lets users add notes to individual items (perhaps such as quantity wanted). If this isn't desired, you can simply remove it here.
+            #}
+            {% include 'commerce_wishlist/partial/edit-item.html.twig' %}
+        </div>
+    </div>
+</div>

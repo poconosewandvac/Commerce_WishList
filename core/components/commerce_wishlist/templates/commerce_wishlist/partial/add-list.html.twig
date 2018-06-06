@@ -1,0 +1,17 @@
+<h4>{{ lex('commerce_wishlist.frontend.add_new_list') }}</h4>
+<form action="{{ properties.resource_url }}/[[++commerce_wishlist.add_uri]]/[[++commerce_wishlist.list_uri]]" method="POST">
+    <label for="wishlist-list-name">{{ lex('commerce_wishlist.frontend.list_name') }}</label>
+    <input id="wishlist-list-name" type="text" name="values[name]" placeholder="{{ lex('commerce_wishlist.frontend.list_name_ph') }}" required="required">
+    
+    <label for="wishlist-list-desc">{{ lex('commerce_wishlist.frontend.list_desc') }}</label>
+    <textarea id="wishlist-list-desc" name="values[description]" placeholder="{{ lex('commerce_wishlist.frontend.list_desc_ph') }}"></textarea>
+
+    {# 
+        You can also submit the share check here, otherwise it'll be disabled by default.
+
+        Ex: <label>Share? <input type="checkbox" name="values[share]" value="1"></label>
+    #}
+
+    <input type="hidden" name="secret" value="1">
+    <button class="button" type="submit">{{ lex('commerce_wishlist.frontend.add_list') }}</button>
+</form>

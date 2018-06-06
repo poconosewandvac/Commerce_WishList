@@ -1,17 +1,29 @@
 <?php
 
 return [
-    'add_list_path' => [
+    'add_uri' => [
         'area' => 'general',
         'value' => 'add',
     ],
-    'delete_list_path' => [
+    'delete_uri' => [
         'area' => 'general',
         'value' => 'delete',
     ],
-    'view_list_path' => [
+    'edit_uri' => [
+        'area' => 'general',
+        'value' => 'edit',
+    ],
+    'view_uri' => [
         'area' => 'general',
         'value' => 'view',
+    ],
+    'item_uri' => [
+        'area' => 'general',
+        'value' => 'item',
+    ],
+    'list_uri' => [
+        'area' => 'general',
+        'value' => 'list',
     ],
     'resource' => [
         'area' => 'general',

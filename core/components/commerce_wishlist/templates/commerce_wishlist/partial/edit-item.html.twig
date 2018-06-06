@@ -1,0 +1,10 @@
+<button id="wishlist-item-edit" class="wishlist-item-add-note">{{ lex('commerce_wishlist.frontend.edit_item') }}</button>
+<div id="wishlist-item-edit-wrap" class="wishlist-item-edit-wrap">
+    <form id="wishlist-item-edit-form" class="wishlist-item-edit-form" action="[[~[[*id]]]]/[[++commerce_wishlist.edit_uri]]/[[++commerce_wishlist.item_uri]]" method="POST">
+        <label for="wishlist-item-note">{{ lex('commerce_wishlist.frontend.note') }}</label>
+        <textarea class="wishlist-item-note" id="wishlist-item-note" name="values[note]" placeholder="{{ lex('commerce_wishlist.frontend.note_ph') }}" value="{{ item.note|e }}">{{ item.note|e }}</textarea>
+
+        <input type="hidden" name="secret" value="{{ item.id }}">
+        <button type="submit" class="wishlist-item-save">{{ lex('commerce.save') }}</button>
+    </form>
+</div>

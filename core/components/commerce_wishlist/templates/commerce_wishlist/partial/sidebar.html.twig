@@ -1,0 +1,17 @@
+{% if lists is not empty %}
+    <ul>
+        {% for list in lists %}
+            {# 
+                All WishlistList fields are available here.                            
+            #}
+            <li>
+                <a href="{{ properties.resource_url }}/[[++commerce_wishlist.view_uri]]/{{ list.secret }}">{{ list.name|e }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>{{ lex('commerce_wishlist.frontend.no_list') }}</p>
+{% endif %}
+<div class="wishlist-sidebar-add-list">
+    <a href="{{ properties.resource_url }}/[[++commerce_wishlist.add_uri]]/[[++commerce_wishlist.list_uri]]">{{ lex('commerce_wishlist.frontend.add_new_list') }}</a>
+</div>

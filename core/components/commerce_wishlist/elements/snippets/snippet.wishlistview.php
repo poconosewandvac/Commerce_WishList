@@ -22,6 +22,7 @@ $registerJs = (bool)$modx->getOption("registerJs", $scriptProperties, true);
 
 $user = $modx->user->get('id');
 $resource =& $modx->resource;
+$url = $modx->makeUrl($resource->get('id'));
 
 // Output placeholders
 $placeholders = [];
@@ -30,7 +31,7 @@ $placeholders = [];
 $placeholders['properties'] = [
     'resource' => $resource,
     'resource_id' => $resource->get('id'),
-    'resource_url' => $modx->makeUrl($resource->get('id')),
+    'resource_url' => $url,
     'view_path' => $viewPath,
     'edit_path' => $editPath,
     'delete_path' => $deletePath,
@@ -48,17 +49,33 @@ if ($type && $secret && is_array($values) && $user) {
     switch ($type) {
         case "add_list":
             $wishlist->addList($values);
-            $modx->sendRedirect($modx->makeUrl($resource));
+            $modx->sendRedirect($url);
             break;
             
         case "edit_list":
             $wishlist->editList($values, $secret, true);
-            $modx->sendRedirect($modx->makeUrl($resource) . '/' . $viewPath . '/' . $secret);
+            $modx->sendRedirect($url . '/' . $viewPath . '/' . $secret);
             break;
             
         case "delete_list":
             $wishlist->deleteList($values);
-            $modx->sendRedirect($modx->makeUrl($resource));
+            $modx->sendRedirect($url);
+            break;
+            
+        case "add_item":
+            
+            break;
+            
+        case "edit_item":
+            
+            break;
+            
+        case "delete_item":
+            
+            break;
+            
+        default:
+            $modx->sendRedirect($url);
             break;
     }
 }
@@ -82,8 +99,14 @@ if (!$list && $user) {
     $modx->sendForward($modx->getOption("error_page"));
 }
 
-// Check if user has access to the requested list
+// Check if user has read/write access to the requested list
+$hasEditPermission = $wishlist->hasEditPermission($list->get('id'));
 $hasReadPermission = $wishlist->hasReadPermission($list->get('id'));
+
+// Add to properties for use in Twig
+$properties['editPermission'] = $hasEditPermission;
+$properties['readPermission'] = $hasReadPermission;
+
 if (!$hasReadPermission) {
     $modx->sendUnauthorizedPage();
 }
@@ -91,23 +114,40 @@ if (!$hasReadPermission) {
 // Make list details available in the wrapper
 $placeholders['list'] = $list->toArray();
 
-// Fetch items in the list
-if (isset($_REQUEST["add"])) {
-    $placeholders['addlist'] = true;
-} else {
-    $getItems = $wishlist->getFormattedItems($list->get('id'));
-    foreach ($getItems as $i) {
-        $items[] = $i->toArray();
-    }
-    $placeholders['items'] = $items;
-}
-
 // Fetch all available lists
 $getLists = $wishlist->getLists();
 foreach ($getLists as $l) {
     $lists[] = $l->toArray();
 }
+if (empty($lists)) {
+    $output = $wishlist->commerce->twig->render('commerce_wishlist/no-list.html.twig', $placeholders);
+    return $wishlist->commerce->adapter->parseMODXTags($output);
+}
 $placeholders['lists'] = $lists;
+
+// Fetch items in the list
+if ($_REQUEST["type"] === "add_list") {
+    $output = $wishlist->commerce->twig->render('commerce_wishlist/add-list.html.twig', $placeholders);
+    return $wishlist->commerce->adapter->parseMODXTags($output);
+} else {
+    $getItems = $wishlist->getFormattedItems($list->get('id'));
+    foreach ($getItems as $i) {
+        $item = $i->toArray();
+        
+        // Moves products into sub array 'product' for Twig. Unset product id from WishlistItem, because comProduct has it anyways
+        // clear product
+        $item['product'] = [];
+        foreach ($item as $key => $value) {
+            if (strncmp($key, 'product_', 8) === 0) {
+                $item['product'][substr($key, 8, strlen($key))] = $value;
+                unset($item[$key]);
+            }
+        }
+        
+        $items[] = $item;
+    }
+    $placeholders['items'] = $items;
+}
 
 // Render the twig file, then render MODX tags
 $output = $wishlist->commerce->twig->render('commerce_wishlist/list-view.html.twig', $placeholders);

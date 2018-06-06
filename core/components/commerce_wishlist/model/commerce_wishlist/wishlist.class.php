@@ -275,23 +275,13 @@ class Wishlist {
      * @param array $where Override what lists it is looking for
      * @return collection
      */
-    public function getFormattedItems($list, $secret = false, $where = null, $join = 'comProduct') {
+    public function getFormattedItems($list, $secret = false, $where = null) {
         $query = $this->modx->newQuery("WishlistItem");
         $query->select($this->modx->getSelectColumns('WishlistItem', 'WishlistItem'));
 
-        switch ($join) {
-            case "comProduct":
-                $query->select($this->modx->getSelectColumns('comProduct', 'comProduct'));
-                $query->innerJoin('comProduct', 'comProduct', ["WishlistItem.product = comProduct.id"]);
-
-                break;
-
-            case "modResource":
-                $query->select($this->modx->getSelectColumns('modResource', 'modResource'));
-                $query->innerJoin('modResource', 'modResource', ["WishlistItem.target = modResource.id"]);
-
-                break;
-        }
+        // Join comProduct
+        $query->select($this->modx->getSelectColumns('comProduct', 'comProduct', 'product_'));
+        $query->innerJoin('comProduct', 'comProduct', ["WishlistItem.product = comProduct.id"]);
 
         if ($where) {
             $query->fromArray($where);
