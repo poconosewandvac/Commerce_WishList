@@ -5,6 +5,7 @@
         <textarea class="wishlist-item-note" id="wishlist-item-note" name="values[note]" placeholder="{{ lex('commerce_wishlist.frontend.note_ph') }}" value="{{ item.note|e }}">{{ item.note|e }}</textarea>
 
         <input type="hidden" name="secret" value="{{ item.id }}">
+        <input type="hidden" name="list" value="{{ list.secret }}">
         <button type="submit" class="wishlist-item-save">{{ lex('commerce.save') }}</button>
     </form>
 </div>

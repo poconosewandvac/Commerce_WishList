@@ -171,7 +171,7 @@ class Wishlist {
     /** 
      * Get the default user list (based on pos)
      * 
-     * @return list id
+     * @return list|bool id|success
      */
     public function getDefaultList() {
         $default = $this->modx->getObject("WishlistList", [
@@ -215,8 +215,8 @@ class Wishlist {
     public function deleteList($list, $secret = false) {
         $query = $this->getList($list, $secret);
 
-        if ($query) {
-            $query->set('removed', 0);
+        if ($query && $query->get('user') == $this->getUser()) {
+            $query->set('removed', 1);
             $query->save();
         }
     }
@@ -236,7 +236,7 @@ class Wishlist {
             return false;
         }
 
-        if (($check->get('user') == $this->user) || $check->get('share') == 1) {
+        if (($check->get('user') == $this->getUser()) || $check->get('share') == 1) {
             return true;
         }
 
@@ -310,7 +310,7 @@ class Wishlist {
         $query->where([
             'id' => $item
         ]);
-        
+
         return $this->modx->getObject('WishlistItem', $query);
     }
 
@@ -339,8 +339,24 @@ class Wishlist {
     public function deleteItem($item) {
         $query = $this->getItem($item);
 
-        if ($query) {
-            $query->set('removed', 0);
+        if ($query && $this->hasEditPermission($query->get('list'))) {
+            $query->set('removed', 1);
+            $query->save();
+        }
+    }
+
+    /** 
+     * Edits existing list
+     * 
+     * @param array values to edit
+     * @param list secret|id
+     * @param bool use secret
+     */
+    public function editItem($values, $item) {
+        $query = $this->getItem($item);
+
+        if ($query && $this->hasEditPermission($query->get('list'))) {
+            $query->fromArray($values);
             $query->save();
         }
     }

@@ -12,9 +12,10 @@ $deletePath = $modx->getOption("commerce_wishlist.delete_uri", null, "delete");
 $addPath = $modx->getOption("commerce_wishlist.add_uri", null, "add");
 
 // Passed values from web
-$values = $modx->getOption("values", $_REQUEST, null);
+$values = $modx->getOption("values", $_REQUEST, []);
 $type = $modx->getOption("type", $_REQUEST, null);
 $secret = $modx->getOption("secret", $_REQUEST, null);
+$list = $modx->getOption("list", $_REQUEST, null);
 
 // Registration of default CSS/JS on web
 $registerCss = (bool)$modx->getOption("registerCss", $scriptProperties, true);
@@ -63,15 +64,24 @@ if ($type && $secret && is_array($values) && $user) {
             break;
             
         case "add_item":
-            
+            // @todo off page adding
+            $wishlist->addItem($values);
             break;
             
         case "edit_item":
+            if (!empty($values)) {
+                $wishlist->editItem($values, $secret);
+            }
             
+            $modx->sendRedirect($url . '/' . $viewPath . '/' . $list);
             break;
             
         case "delete_item":
+            $wishlist->deleteItem($values);
             
+            // @todo change for off page adding
+            $modx->sendRedirect($url . '/' . $viewPath . '/' . $list);
+
             break;
             
         default:

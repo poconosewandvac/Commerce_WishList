@@ -1,6 +1,8 @@
 <div class="wishlist-item-delete-wrap">
-    <form id="wishlist-item-delete-form" class="wishlist-item-delete-form" action="{{ properties.resource_url }}/[[++commerce_wishlist.delete_uri]]/[[++commerce_wishlist.item_uri]]">
+    <form id="wishlist-item-delete-form" class="wishlist-item-delete-form" action="{{ properties.resource_url }}/[[++commerce_wishlist.delete_uri]]/[[++commerce_wishlist.item_uri]]" method="POST">
         <input type="hidden" name="secret" value="{{ item.id }}">
+        <input type="hidden" name="list" value="{{ list.secret }}">
+        
         <button type="submit" id="wishlist-item-delete" class="wishlist-item-delete">{{ lex('commerce.delete') }}</button>
     </form>
 </div>
