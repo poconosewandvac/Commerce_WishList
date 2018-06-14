@@ -114,8 +114,8 @@ $hasEditPermission = $wishlist->hasEditPermission($list->get('id'));
 $hasReadPermission = $wishlist->hasReadPermission($list->get('id'));
 
 // Add to properties for use in Twig
-$properties['editPermission'] = $hasEditPermission;
-$properties['readPermission'] = $hasReadPermission;
+$placeholders['hasEditPermission'] = $hasEditPermission;
+$placeholders['hasReadPermission'] = $hasReadPermission;
 
 if (!$hasReadPermission) {
     $modx->sendUnauthorizedPage();

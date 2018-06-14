@@ -1,7 +1,19 @@
 {% extends 'commerce_wishlist/base.html.twig' %}
 
 {% block content %}
-    <h4 class="wishlist-title">{{ list.name|e }}</h4>
+    <h4 class="wishlist-title">{{ list.name|e }}
+        {% if hasEditPermission %}
+            <small>
+                <button id="wishlist-modal-open" class="wishlist-modal-open">(Edit)</button>
+            </small>
+        {% endif %}
+    </h4>
+
+    <p class="wishlist-list-description">{{ list.description|e }}</p>
+
+    {% if hasEditPermission %}
+        {% include 'commerce_wishlist/partial/edit-list.html.twig' %}
+    {% endif %}
 
     {% if items is empty %}
         <p>{{ lex('commerce_wishlist.frontend.empty_list') }}</p>

@@ -1,0 +1,33 @@
+<div id="wishlist-list-edit-dialog" class="wishlist-list-edit-dialog">
+    <div>
+        <header>
+            <h4>{{ lex('commerce_wishlist.frontend.edit_list')}} <span id="wishlist-list-dialog-edit-close" class="wishlist-list-dialog-edit-close">&times;</span></h4>
+        </header>
+        <section>
+            <form id="wishlist-list-edit-form" class="wishlist-list-edit-form" action="[[~[[*id]]]]/edit/list" method="POST">
+                <label for="wishlist-list-name">{{ lex('commerce_wishlist.frontend.list_name') }}</label>
+                <input type="text" name="values[name]" id="wishlist-list-name" placeholder="{{ lex('commerce_wishlist.frontend.list_name_ph') }}" value="{{ list.name|e }}" required>
+                        
+                <label for="wishlist-list-desc">{{ lex('commerce_wishlist.frontend.list_desc') }} {{ lex('commerce_wishlist.frontend.optional') }}</label>
+                <textarea name="values[description]" id="wishlist-list-desc" placeholder="{{ lex('commerce_wishlist.frontend.list_desc_ph') }}">{{ list.description }}</textarea>
+                        
+                <label>{{ lex('commerce_wishlist.frontend.share_list') }}
+                    <input type="hidden" name="values[share]" value="0">
+                    <input id="wishlist-list-share" class="wishlist-list-share" type="checkbox" name="values[share]" value="1"{% if list.share == 1 %} checked{% endif %}>
+                </label>
+                            
+                <input type="hidden" name="secret" value="{{ list.secret }}">
+                <input type="hidden" name="type" value="edit_list">
+            </form>
+                    
+            <form id="wishlist-list-delete-form" class="wishlist-list-delete-form" action="[[~[[*id]]]]/[[++commerce_wishlist.delete_uri]]" method="POST">
+                <input type="hidden" name="type" value="delete_list">
+                <input type="hidden" name="secret" value="{{ list.secret }}">
+            </form>
+        </section>
+        <footer>
+            <button class="wishlist-list-delete" id="wishlist-list-delete">{{ lex('commerce_wishlist.frontend.delete_list') }}</button>
+            <button class="wishlist-list-save" id="wishlist-list-save">{{ lex('commerce_wishlist.frontend.save') }}</button>
+        </footer>
+    </div>
+</div>
