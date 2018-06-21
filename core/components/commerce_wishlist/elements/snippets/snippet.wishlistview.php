@@ -59,7 +59,7 @@ if ($type && $secret && is_array($values) && $user) {
             break;
             
         case "delete_list":
-            $wishlist->deleteList($values);
+            $wishlist->deleteList($secret, true);
             $modx->sendRedirect($url);
             break;
             

@@ -17,11 +17,9 @@
                 </label>
                             
                 <input type="hidden" name="secret" value="{{ list.secret }}">
-                <input type="hidden" name="type" value="edit_list">
             </form>
                     
-            <form id="wishlist-list-delete-form" class="wishlist-list-delete-form" action="[[~[[*id]]]]/[[++commerce_wishlist.delete_uri]]" method="POST">
-                <input type="hidden" name="type" value="delete_list">
+            <form id="wishlist-list-delete-form" class="wishlist-list-delete-form" action="[[~[[*id]]]]/[[++commerce_wishlist.delete_uri]]/[[++commerce_wishlist.list_uri]]" method="POST">
                 <input type="hidden" name="secret" value="{{ list.secret }}">
             </form>
         </section>

@@ -108,7 +108,8 @@ class Wishlist {
     public function editList($values, $list, $secret = false) {
         $c = $this->modx->newQuery("WishlistList");
         $c->where([
-            'user' => $this->getUser()
+            'user' => $this->getUser(),
+            'removed' => 0
         ]);
 
         if ($secret) {
@@ -151,19 +152,15 @@ class Wishlist {
     /** 
      * Get all user lists
      * 
-     * @param array $where Override what lists it is looking for
      * @return collection
      */
-    public function getLists($where = null) {
+    public function getLists() {
         $query = $this->modx->newQuery("WishlistList");
 
-        if ($where) {
-            $query->fromArray($where);
-        } else {
-            $query->where([
-                'user' => $this->getUser()
-            ]);
-        }
+        $query->where([
+            'user' => $this->getUser(),
+            'removed' => 0
+        ]);
         
         return $this->modx->getCollection('WishlistList', $query);
     }
@@ -176,14 +173,15 @@ class Wishlist {
     public function getDefaultList() {
         $default = $this->modx->getObject("WishlistList", [
             'user' => $this->getUser(),
-            'pos' => 0
+            'pos' => 0,
+            'removed' => 0
         ]);
 
         return $default ? $default->get('id') : false;
     }
 
     /**
-     * Fetches the name of the list
+     * Fetches a list object based on id or secret
      *
      * @param string list
      * @param bool secret use secret
@@ -289,11 +287,15 @@ class Wishlist {
             $query->select('WishlistList.secret');
             $query->innerJoin('WishlistList', 'WishlistList', ["WishlistItem.list = WishlistList.id"]);
             $query->where([
-                'WishlistList.secret' => $list
+                'WishlistList.secret' => $list,
+                'WishlistItem.removed' => 0,
+                'comProduct.removed' => 0
             ]);
         } else {
             $query->where([
-                'WishlistItem.list' => $list
+                'WishlistItem.list' => $list,
+                'WishlistItem.removed' => 0,
+                'comProduct.removed' => 0
             ]);
         }
         
@@ -307,8 +309,10 @@ class Wishlist {
      */
     public function getItem($item) {
         $query = $this->modx->newQuery("WishlistItem");
+
         $query->where([
-            'id' => $item
+            'id' => $item,
+            'removed' => 0
         ]);
 
         return $this->modx->getObject('WishlistItem', $query);
@@ -322,9 +326,12 @@ class Wishlist {
      */
     public function getItems($list) {
         $query = $this->modx->newQuery("WishlistItem");
+        
         $query->where([
-            'list' => $list
+            'list' => $list,
+            'removed' => 0
         ]);
+
         $query->sortby('pos', 'ASC');
         
         return $this->modx->getCollection('WishlistItem', $query);

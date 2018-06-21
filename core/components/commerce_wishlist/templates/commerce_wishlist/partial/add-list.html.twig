@@ -1,7 +1,7 @@
 <h4>{{ lex('commerce_wishlist.frontend.add_new_list') }}</h4>
 <form action="{{ properties.resource_url }}/[[++commerce_wishlist.add_uri]]/[[++commerce_wishlist.list_uri]]" method="POST">
     <label for="wishlist-list-name">{{ lex('commerce_wishlist.frontend.list_name') }}</label>
-    <input id="wishlist-list-name" type="text" name="values[name]" placeholder="{{ lex('commerce_wishlist.frontend.list_name_ph') }}" required="required">
+    <input id="wishlist-list-name" type="text" name="values[name]" placeholder="{{ lex('commerce_wishlist.frontend.list_name_ph') }}" required>
     
     <label for="wishlist-list-desc">{{ lex('commerce_wishlist.frontend.list_desc') }}</label>
     <textarea id="wishlist-list-desc" name="values[description]" placeholder="{{ lex('commerce_wishlist.frontend.list_desc_ph') }}"></textarea>
