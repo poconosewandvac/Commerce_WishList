@@ -23,7 +23,7 @@ $xpdo_meta_map['WishlistItem']= array (
   array (
     'list' => 0,
     'product' => 0,
-    'target' => 0,
+    'quantity' => 0,
     'note' => '',
     'date' => 0,
     'pos' => 0,
@@ -47,7 +47,7 @@ $xpdo_meta_map['WishlistItem']= array (
       'null' => true,
       'default' => 0,
     ),
-    'target' => 
+    'quantity' => 
     array (
       'dbtype' => 'int',
       'precision' => '10',

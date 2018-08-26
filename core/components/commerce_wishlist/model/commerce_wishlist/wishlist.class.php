@@ -9,14 +9,12 @@
  * @package commerce_wishlist
  * @license See core/components/commerce_wishlist/docs/license.txt
  */
-class Wishlist {
+class Wishlist
+{
     public $modx;
     public $user;
     public $commerce;
     public $config = [];
-
-    private $allowedListFields = [];
-    private $allowedItemFields = [];
 
     /**
      * Initialize modX, Commerce, and user
@@ -24,7 +22,8 @@ class Wishlist {
      * @param modX $modx
      * @param array $config
      */
-    public function __construct(modX &$modx, array $config = array()) {
+    public function __construct(modX &$modx, array $config = array())
+    {
         // Initialize Wishlist
         $this->modx =& $modx;
         $this->user = $config['user'];
@@ -57,7 +56,8 @@ class Wishlist {
      * 
      * @return int
      */
-    public function getUser() {
+    public function getUser()
+    {
         return $this->user;
     }
 
@@ -68,7 +68,8 @@ class Wishlist {
      * @param bool $js
      * @return void
      */
-    public function registerAssets($css, $js) {
+    public function registerAssets($css, $js)
+    {
         if ($css) {
             $this->modx->regClientCSS($this->config['cssUrl'] . 'wishlist.css');
         }
@@ -78,75 +79,14 @@ class Wishlist {
     }
 
     /**
-     * Add list from submission
+     * Fetches a list object based on id or secret
      *
-     * @param array $values
-     * @return int|bool list id
+     * @param string list
+     * @return list object
      */
-    public function addList($values) {
-        $values['secret'] = $this->generateSecret();
-        $values['user'] = $this->getUser();
-
-        $query = $this->modx->newObject("WishlistList");
-        $query->fromArray($values);
-        $query->save();
-
-        if (!$query) {
-            return false;
-        }
-
-        return $query->get('id');
-    }
-
-    /** 
-     * Edits existing list
-     * 
-     * @param array values to edit
-     * @param list secret|id
-     * @param bool use secret
-     */
-    public function editList($values, $list, $secret = false) {
-        $c = $this->modx->newQuery("WishlistList");
-        $c->where([
-            'user' => $this->getUser(),
-            'removed' => 0
-        ]);
-
-        if ($secret) {
-            $c->where([
-                'secret' => $list
-            ]);
-        } else {
-            $c->where([
-                'id' => $list
-            ]);
-        }
-
-        $editList = $this->modx->getObject("WishlistList", $c);
-        if ($editList) {
-            $editList->fromArray($values);
-            $editList->save();
-        }
-    }
-
-    /**
-     * Add item from submission
-     *
-     * @param array $values
-     * @return int|bool item id
-     */
-    public function addItem($values) {
-        $query = $this->modx->newObject("WishlistItem");
-        $values['date'] = time();
-
-        $query->fromArray($values);
-        $query->save();
-
-        if (!$query) {
-            return false;
-        }
-
-        return $query->get('id');
+    public function getList($list)
+    {
+        return $this->modx->getObject("WishlistList", ['secret' => $list]);
     }
 
     /** 
@@ -154,7 +94,8 @@ class Wishlist {
      * 
      * @return collection
      */
-    public function getLists() {
+    public function getLists()
+    {
         $query = $this->modx->newQuery("WishlistList");
 
         $query->where([
@@ -165,12 +106,14 @@ class Wishlist {
         return $this->modx->getCollection('WishlistList', $query);
     }
 
+
     /** 
      * Get the default user list (based on pos)
      * 
      * @return list|bool id|success
      */
-    public function getDefaultList() {
+    public function getDefaultList()
+    {
         $default = $this->modx->getObject("WishlistList", [
             'user' => $this->getUser(),
             'pos' => 0,
@@ -180,92 +123,6 @@ class Wishlist {
         return $default ? $default->get('id') : false;
     }
 
-    /**
-     * Fetches a list object based on id or secret
-     *
-     * @param string list
-     * @param bool secret use secret
-     * @return list object
-     */
-    public function getList($list, $secret = false) {
-        $query = $this->modx->newQuery("WishlistList");
-
-        if ($secret) {
-            $query->where([
-                'secret' => $list
-            ]);
-        } else {
-            $query->where([
-                'id' => $list
-            ]);
-        }
-
-        return $this->modx->getObject('WishlistList', $query);
-    }
-
-    /** 
-     * "Removes" a list (just sets "removed" column to 1) 
-     * 
-     * @param string list
-     * @param bool secret use secret
-     * @return void
-     */
-    public function deleteList($list, $secret = false) {
-        $query = $this->getList($list, $secret);
-
-        if ($query && $query->get('user') == $this->getUser()) {
-            $query->set('removed', 1);
-            $query->save();
-        }
-    }
-
-    /** 
-     * Checks if user can read the list.
-     * 
-     * @param string list
-     * @param bool secret use secret
-     * @return bool
-     */
-    public function hasReadPermission($list, $secret = false) {
-        $check = $this->getList($list, $secret);
-
-        // If list doesn't exist
-        if (!$check) {
-            return false;
-        }
-
-        if (($check->get('user') == $this->getUser()) || $check->get('share') == 1) {
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * If user has permission to edit list
-     *
-     * @param [type] $list
-     * @param boolean $secret
-     * @return boolean
-     */
-    public function hasEditPermission($list, $secret = false) {
-        $query = $this->modx->newQuery("WishlistList");
-
-        if ($secret) {
-            $query->where([
-                'secret' => $list,
-                'user' => $this->getUser()
-            ]);
-        } else {
-            $query->where([
-                'id' => $list,
-                'user' => $this->getUser()
-            ]);
-        }
-
-        return $this->modx->getObject("WishlistList", $query) ? true : false;
-    }
-
     /** 
      * Get all user lists
      * 
@@ -273,7 +130,8 @@ class Wishlist {
      * @param array $where Override what lists it is looking for
      * @return collection
      */
-    public function getFormattedItems($list, $secret = false, $where = null) {
+    public function getFormattedItems($list, $secret = false, $where = null)
+    {
         $query = $this->modx->newQuery("WishlistItem");
         $query->select($this->modx->getSelectColumns('WishlistItem', 'WishlistItem'));
 
@@ -300,94 +158,5 @@ class Wishlist {
         }
         
         return $this->modx->getCollection('WishlistItem', $query);
-    }
-
-    /**
-     * Gets a single item by id
-     * 
-     * @param int item id
-     */
-    public function getItem($item) {
-        $query = $this->modx->newQuery("WishlistItem");
-
-        $query->where([
-            'id' => $item,
-            'removed' => 0
-        ]);
-
-        return $this->modx->getObject('WishlistItem', $query);
-    }
-
-    /**
-     * Gets all items in a list
-     * 
-     * @param int list id
-     * @return items
-     */
-    public function getItems($list) {
-        $query = $this->modx->newQuery("WishlistItem");
-        
-        $query->where([
-            'list' => $list,
-            'removed' => 0
-        ]);
-
-        $query->sortby('pos', 'ASC');
-        
-        return $this->modx->getCollection('WishlistItem', $query);
-    }
-
-    /** 
-     * "Removes" an item (soft delete, just sets "removed" column to 1) 
-     * 
-     * @param string item
-     * @return void
-     */
-    public function deleteItem($item) {
-        $query = $this->getItem($item);
-
-        if ($query && $this->hasEditPermission($query->get('list'))) {
-            $query->set('removed', 1);
-            $query->save();
-        }
-    }
-
-    /** 
-     * Edits existing list
-     * 
-     * @param array values to edit
-     * @param list secret|id
-     * @param bool use secret
-     */
-    public function editItem($values, $item) {
-        $query = $this->getItem($item);
-
-        if ($query && $this->hasEditPermission($query->get('list'))) {
-            $query->fromArray($values);
-            $query->save();
-        }
-    }
-
-    /**
-     * Generates secret field to use in URL
-     *
-     * @param int bytes of secret field
-     * @param bool check if it is a duplicate
-     * @return void
-     */
-    public function generateSecret($bytes = 5, $check = true) {
-        $secret = bin2hex(openssl_random_pseudo_bytes($bytes));
-
-        // Check to ensure random generated string has not been used before
-        if ($check) {
-            $query = $this->modx->getObject('WishlistList', ['secret' => $secret]);
-            
-            if ($query) {
-                // Generate a new one if it is being used.
-                $secret = $this->generateSecret($bytes, $check);
-            }
-        }
-
-        return $secret;
     }
 }

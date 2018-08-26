@@ -15,6 +15,7 @@
     <object class="WishlistItem" table="commerce_wishlist_item" extends="comSimpleObject">
         <field key="list" dbtype="int" precision="10" phptype="int" null="true" default="0" />
         <field key="product" dbtype="int" precision="10" phptype="int" null="true" default="0" />
+        <field key="quantity" dbtype="int" precision="10" phptype="int" null="true" default="0" />
         <field key="note" dbtype="text" phptype="string" null="true" default="" />
         <field key="date" formatter="datetime" dbtype="int" precision="20" phptype="int" null="false" default="0" />
         <field key="pos" dbtype="int" precision="10" phptype="int" null="true" default="0" />
