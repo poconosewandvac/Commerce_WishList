@@ -1,4 +1,13 @@
 <?php
+$loaderPath = dirname(dirname(__DIR__)) . '/vendor/autoload.php';
+if (!file_exists($loaderPath)) {
+    throw new Exception('Could not load autoloader, file does not exist at ' . $loaderPath
+        . '. Are dependencies properly installed?');
+}
+// Setting the loader to a global allows us to store a reference to it in the service class.
+global $loader;
+$loader = require $loaderPath;
+
 /**
  * Wishlist for Commerce.
  *
@@ -11,9 +20,31 @@
  */
 class Wishlist
 {
+    /**
+     * @var modX
+     */
     public $modx;
+
+    /**
+     * The Composer Autoloader instance.
+     *
+     * @var Composer\Autoload\ClassLoader $adapter
+     */
+    public $loader;
+
+    /**
+     * @var int
+     */
     public $user;
+
+    /**
+     * @var Commerce
+     */
     public $commerce;
+
+    /**
+     * @var array
+     */
     public $config = [];
 
     /**
@@ -27,6 +58,10 @@ class Wishlist
         // Initialize Wishlist
         $this->modx =& $modx;
         $this->user = $config['user'];
+
+        global $loader;
+        $this->loader =& $loader;
+        $this->loader->add('PoconoSewVac\\Wishlist\\', __DIR__);
 
         $corePath = $this->modx->getOption('commerce_wishlist.core_path', $config, $this->modx->getOption('core_path').'components/commerce_wishlist/');
         $assetsUrl = $this->modx->getOption('commerce_wishlist.assets_url', $config, $this->modx->getOption('assets_url').'components/commerce_wishlist/');
@@ -82,35 +117,17 @@ class Wishlist
      * Fetches a list object based on id or secret
      *
      * @param string list
-     * @return list object
+     * @return xPDOObject list object
      */
     public function getList($list)
     {
         return $this->modx->getObject("WishlistList", ['secret' => $list]);
     }
 
-    /** 
-     * Get all user lists
-     * 
-     * @return collection
-     */
-    public function getLists()
-    {
-        $query = $this->modx->newQuery("WishlistList");
-
-        $query->where([
-            'user' => $this->getUser(),
-            'removed' => 0
-        ]);
-        
-        return $this->modx->getCollection('WishlistList', $query);
-    }
-
-
-    /** 
+    /**
      * Get the default user list (based on pos)
-     * 
-     * @return list|bool id|success
+     *
+     * @return xPDOObject|bool
      */
     public function getDefaultList()
     {
@@ -126,11 +143,23 @@ class Wishlist
     /** 
      * Get all user lists
      * 
-     * @param string $join Package to join on.
-     * @param array $where Override what lists it is looking for
-     * @return collection
+     * @return array
      */
-    public function getFormattedItems($list, $secret = false, $where = null)
+    public function getLists()
+    {
+        return $this->modx->getCollection('WishlistList', [
+            'user' => $this->getUser(),
+            'removed' => 0
+        ]);
+    }
+
+    /** 
+     * Get all user lists
+     * 
+     * @param string $list
+     * @return array
+     */
+    public function getFormattedItems($list)
     {
         $query = $this->modx->newQuery("WishlistItem");
         $query->select($this->modx->getSelectColumns('WishlistItem', 'WishlistItem'));
@@ -139,23 +168,13 @@ class Wishlist
         $query->select($this->modx->getSelectColumns('comProduct', 'comProduct', 'product_'));
         $query->innerJoin('comProduct', 'comProduct', ["WishlistItem.product = comProduct.id"]);
 
-        if ($where) {
-            $query->fromArray($where);
-        } else if ($secret) {
-            $query->select('WishlistList.secret');
-            $query->innerJoin('WishlistList', 'WishlistList', ["WishlistItem.list = WishlistList.id"]);
-            $query->where([
-                'WishlistList.secret' => $list,
-                'WishlistItem.removed' => 0,
-                'comProduct.removed' => 0
-            ]);
-        } else {
-            $query->where([
-                'WishlistItem.list' => $list,
-                'WishlistItem.removed' => 0,
-                'comProduct.removed' => 0
-            ]);
-        }
+        $query->select('WishlistList.secret');
+        $query->innerJoin('WishlistList', 'WishlistList', ["WishlistItem.list = WishlistList.id"]);
+        $query->where([
+            'WishlistList.secret' => $list,
+            'WishlistItem.removed' => 0,
+            'comProduct.removed' => 0
+        ]);
         
         return $this->modx->getCollection('WishlistItem', $query);
     }
