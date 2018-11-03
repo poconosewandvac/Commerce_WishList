@@ -17,7 +17,7 @@ class Wishlist extends BaseModule {
 
     public function getAuthor()
     {
-        return 'Tony Klapatch';
+        return 'Tony Klapatch - Pocono Sew & Vac';
     }
 
     public function getDescription()

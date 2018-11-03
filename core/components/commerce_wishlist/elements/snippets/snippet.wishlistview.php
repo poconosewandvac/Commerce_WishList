@@ -5,7 +5,7 @@
  * Made by Tony Klapatch <tony@klapatch.net>
  */
 
-use PoconoSewVac\Wishlist\Frontend\WishlistResponse;
+use PoconoSewVac\Wishlist\Frontend\Response;
 
 // $values = $modx->getOption("values", $_REQUEST, []);
 // $type = $modx->getOption("type", $_REQUEST, null);
@@ -31,8 +31,10 @@ if ($commerce->isDisabled()) {
 $wishlist = $modx->getService('wishlist', 'Wishlist', $modx->getOption('commerce_wishlist.core_path', null, $modx->getOption('core_path') . 'components/commerce_wishlist/') . 'model/commerce_wishlist/', [$scriptProperties, 'user' => $user]);
 if (!($wishlist instanceof Wishlist)) return '';
 
-/** @var PoconoSewVac\Wishlist\Frontend\WishlistResponse $response */
-$response = new WishlistResponse($commerce);
+/** @var PoconoSewVac\Wishlist\Frontend\WishlistRequest $request */
+// $request = new WishlistRequest(array_merge($_REQUEST, $scriptProperties));
+/** @var PoconoSewVac\Wishlist\Frontend\Response $response */
+$response = new Response($commerce);
 
 $user = $modx->user->get('id');
 $resource = &$modx->resource;
