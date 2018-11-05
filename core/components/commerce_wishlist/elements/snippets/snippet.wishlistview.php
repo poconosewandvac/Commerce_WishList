@@ -5,11 +5,10 @@
  * Made by Tony Klapatch <tony@klapatch.net>
  */
 
+use PoconoSewVac\Wishlist\Frontend\Request;
 use PoconoSewVac\Wishlist\Frontend\Response;
 
-// $values = $modx->getOption("values", $_REQUEST, []);
-// $type = $modx->getOption("type", $_REQUEST, null);
-$secret = $modx->getOption("secret", $_REQUEST, null);
+$request = $modx->getOption("values", $_REQUEST, []);
 
 // Registration of default CSS/JS on web
 $registerCss = (bool)$modx->getOption("registerCss", $scriptProperties, true);
@@ -18,21 +17,23 @@ $registerJs = (bool)$modx->getOption("registerJs", $scriptProperties, true);
 $path = $modx->getOption('commerce.core_path', null, MODX_CORE_PATH . 'components/commerce/') . 'model/commerce/';
 $params = ['mode' => $modx->getOption('commerce.mode')];
 
+// Initiate Commerce
 /** @var Commerce|null $commerce */
 $commerce = $modx->getService('commerce', 'Commerce', $path, $params);
 if (!($commerce instanceof Commerce)) {
     return '<p class="error">Oops! It is not possible to view your wishlist. We\'re sorry for the inconvenience. Please try again later.</p>';
 }
-
 if ($commerce->isDisabled()) {
     return $commerce->adapter->lexicon('commerce.mode.disabled.message');
 }
 
+// Initiate Wishlist
 $wishlist = $modx->getService('wishlist', 'Wishlist', $modx->getOption('commerce_wishlist.core_path', null, $modx->getOption('core_path') . 'components/commerce_wishlist/') . 'model/commerce_wishlist/', [$scriptProperties, 'user' => $user]);
 if (!($wishlist instanceof Wishlist)) return '';
 
-/** @var PoconoSewVac\Wishlist\Frontend\WishlistRequest $request */
-// $request = new WishlistRequest(array_merge($_REQUEST, $scriptProperties));
+// Load the request
+/** @var PoconoSewVac\Wishlist\Frontend\Request $request */
+$request = new Request($request);
 /** @var PoconoSewVac\Wishlist\Frontend\Response $response */
 $response = new Response($commerce);
 

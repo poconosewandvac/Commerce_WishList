@@ -13,7 +13,8 @@ use PoconoSewVac\Wishlist\Frontend\Response;
  * @package commerce_wishlist
  * @license See core/components/commerce_wishlist/docs/license.txt
  */
-abstract class Action {
+abstract class Action
+{
     /**
      * @var \modUser|null
      */
@@ -42,8 +43,17 @@ abstract class Action {
         $this->options = $options;
         $this->commerce = $commerce;
         $this->adapter = $commerce->adapter;
-
         $this->user = $commerce->adapter->getUser();
+    }
+
+    /**
+     * Get the class name to use as an identifier
+     *
+     * @return string
+     */
+    public static function getClassName()
+    {
+        return get_called_class();
     }
 
     /**
@@ -62,7 +72,7 @@ abstract class Action {
      *
      * @return bool
      */
-    public function isLoggedIn() : bool
+    public function isLoggedIn()
     {
         return (bool) $this->user;
     }
