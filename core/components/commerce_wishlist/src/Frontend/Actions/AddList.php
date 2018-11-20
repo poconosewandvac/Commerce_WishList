@@ -15,17 +15,13 @@ use PoconoSewVac\Wishlist\Frontend\Response;
  */
 class AddList extends Action
 {
-    public function hasPermission()
+    public function execute()
     {
-        if ($this->isLoggedIn()) {
-            return true;
-        }
-
-        return false;
+        // TODO: Implement execute() method.
     }
 
-    public function execute(Response $response)
+    public function output(Response $response)
     {
-
+        // TODO: Implement output() method.
     }
 }

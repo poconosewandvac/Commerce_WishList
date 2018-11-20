@@ -2,6 +2,7 @@
 namespace PoconoSewVac\Wishlist\Frontend\Actions;
 
 use PoconoSewVac\Wishlist\Frontend\Response;
+use PoconoSewVac\Wishlist\Frontend\Request;
 
 /**
  * Wishlist for Commerce.
@@ -28,43 +29,22 @@ abstract class Action
      */
     protected $adapter;
     /**
-     * @var array
+     * @var Request
      */
-    protected $options;
+    protected $request;
 
     /**
      * Action constructor.
      *
-     * @param $params
-     * @param \Commerce $commerce
+     * @param Request $request
      */
-    public function __construct(array $options, \Commerce $commerce)
+    public function __construct(Request $request)
     {
-        $this->options = $options;
-        $this->commerce = $commerce;
-        $this->adapter = $commerce->adapter;
-        $this->user = $commerce->adapter->getUser();
-    }
+        $this->request = $request;
 
-    /**
-     * Get the class name to use as an identifier
-     *
-     * @return string
-     */
-    public static function getClassName()
-    {
-        return get_called_class();
-    }
-
-    /**
-     * Gets an option by key
-     *
-     * @param string $option
-     * @return mixed
-     */
-    public function getOption(string $option)
-    {
-        return $this->options[$option];
+        $this->commerce = $this->request->commerce;
+        $this->adapter = $this->commerce->adapter;
+        $this->user = $this->commerce->adapter->getUser();
     }
 
     /**
@@ -78,11 +58,18 @@ abstract class Action
     }
 
     /**
-     * Per action implementation of permission checking
+     * Default has permission method
      *
      * @return bool
      */
-    public abstract function hasPermission();
+    public function hasPermission()
+    {
+        if ($this->isLoggedIn()) {
+            return true;
+        }
+
+        return false;
+    }
 
     /**
      * Execute the given action
@@ -90,5 +77,13 @@ abstract class Action
      * @param Response response object for passing back data to the client
      * @return mixed
      */
-    public abstract function execute(Response $response);
+    public abstract function execute();
+
+    /**
+     * Set the response back to the client
+     *
+     * @param Response $response
+     * @return mixed
+     */
+    public abstract function output(Response $response);
 }

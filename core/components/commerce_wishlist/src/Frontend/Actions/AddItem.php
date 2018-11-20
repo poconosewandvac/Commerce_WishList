@@ -1,7 +1,7 @@
 <?php
-namespace PoconoSewVac\Wishlist\Frontend;
+namespace PoconoSewVac\Wishlist\Frontend\Actions;
 
-use modmore\Commerce\Frontend\Response as CommerceResponse;
+use PoconoSewVac\Wishlist\Frontend\Response;
 
 /**
  * Wishlist for Commerce.
@@ -13,11 +13,15 @@ use modmore\Commerce\Frontend\Response as CommerceResponse;
  * @package commerce_wishlist
  * @license See core/components/commerce_wishlist/docs/license.txt
  */
-class Response extends CommerceResponse
+class AddItem extends Action
 {
-    public function __construct(\Commerce $commerce)
+    public function execute()
     {
-        $this->commerce = $commerce;
-        $this->adapter = $commerce->adapter;
+        // TODO: Implement execute() method.
+    }
+
+    public function output(Response $response)
+    {
+        // TODO: Implement output() method.
     }
 }
